@@ -14,10 +14,10 @@ namespace ariel
 
     class MagicalContainer
     {
-        std::vector<int> originalElements; // stores original insertion order
-        std::list<int> crossElements;      // stores elements in cross order. easier to remove elements
-        std::multiset<int> sortedElements; // stores elements in ascending order. always sorted
-        std::vector<int> primeElements;    // stores prime numbers only
+        vector<int> defaultElements; // stores original insertion order
+        vector<int> sideCrossElements; // stores elements in cross order
+        vector<int> ascendingElements; // stores elements in ascending order
+        vector<int> primeElements;    // stores prime numbers only
 
         void updateCrossElements();
         bool isPrime(int number) const;
@@ -47,7 +47,7 @@ namespace ariel
     {
     private:
         MagicalContainer *magicalContainer;
-        std::multiset<int>::iterator it;
+        vector<int>::iterator it;
         size_t pos;
 
     public:
@@ -76,7 +76,7 @@ namespace ariel
     {
     private:
         MagicalContainer *magicalContainer;
-        std::list<int>::iterator it;
+        vector<int>::iterator it;
         size_t pos;
 
     public:
@@ -105,7 +105,7 @@ namespace ariel
     {
     private:
         MagicalContainer *magicalContainer;
-        std::vector<int>::iterator it;
+        vector<int>::iterator it;
         size_t pos;
 
     public:

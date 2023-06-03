@@ -22,22 +22,22 @@ bool MagicalContainer::isPrime(int num) const
 
 void MagicalContainer::updateCrossElements()
 {
-    crossElements.clear();
-    auto start_it = sortedElements.begin();
-    auto end_it = sortedElements.end();
+    sideCrossElements.clear();
+    auto start_it = ascendingElements.begin();
+    auto end_it = ascendingElements.end();
     --end_it;
 
-    while (start_it != sortedElements.end())
+    while (start_it != ascendingElements.end())
     {
         // insert the smaller element first
-        crossElements.push_back(*start_it);
+        sideCrossElements.push_back(*start_it);
         if (start_it != end_it)
         {
             // if there is another element, insert the bigger element next
-            crossElements.push_back(*end_it);
+            sideCrossElements.push_back(*end_it);
         }
         ++start_it;
-        if (end_it != start_it && start_it != sortedElements.end())
+        if (end_it != start_it && start_it != ascendingElements.end())
         {
             --end_it;
         }
@@ -46,8 +46,8 @@ void MagicalContainer::updateCrossElements()
 
 void MagicalContainer::addElement(int element)
 {
-    originalElements.push_back(element);
-    sortedElements.insert(element);
+    defaultElements.push_back(element);
+    ascendingElements.push_back(element);
     if (isPrime(element))
     {
         primeElements.push_back(element);
@@ -57,8 +57,8 @@ void MagicalContainer::addElement(int element)
 
 void MagicalContainer::removeElement(int element)
 {
-    originalElements.erase(std::remove(originalElements.begin(), originalElements.end(), element), originalElements.end()); // remove element from originalElements
-    sortedElements.erase(sortedElements.find(element));                                                                     // remove element from sortedElements
+    defaultElements.erase(std::remove(defaultElements.begin(), defaultElements.end(), element), defaultElements.end());
+    ascendingElements.erase(std::remove(ascendingElements.begin(), ascendingElements.end(), element), ascendingElements.end());  
     if (isPrime(element))
     {
         primeElements.erase(std::remove(primeElements.begin(), primeElements.end(), element), primeElements.end());
@@ -68,24 +68,24 @@ void MagicalContainer::removeElement(int element)
 
 size_t MagicalContainer::size() const
 {
-    return originalElements.size();
+    return defaultElements.size();
 }
 
 bool MagicalContainer::operator==(const MagicalContainer &other) const
 {
-    return originalElements == other.originalElements;
+    return defaultElements == other.defaultElements;
 }
 
 bool MagicalContainer::operator!=(const MagicalContainer &other) const
 {
-    return originalElements != other.originalElements;
+    return defaultElements != other.defaultElements;
 }
 
 /*******************************************
 ************* AscendingIterator ************
 ********************************************/
 
-MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer &magicalContainer) : magicalContainer(&magicalContainer), pos(0), it(magicalContainer.sortedElements.begin()) {}
+MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer &magicalContainer) : magicalContainer(&magicalContainer), pos(0), it(magicalContainer.ascendingElements.begin()) {}
 
 MagicalContainer::AscendingIterator::AscendingIterator(const AscendingIterator &other) : magicalContainer(other.magicalContainer), pos(other.pos), it(other.it) {}
 
@@ -131,14 +131,14 @@ bool MagicalContainer::AscendingIterator::operator>(const AscendingIterator &oth
 
 int MagicalContainer::AscendingIterator::operator*() const
 {
-    if (it == magicalContainer->sortedElements.end())
+    if (it == magicalContainer->ascendingElements.end())
         throw std::out_of_range("AscendingIterator out of range");
     return *it;
 }
 
 MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::operator++()
 {
-    if (it == magicalContainer->sortedElements.end())
+    if (it == magicalContainer->ascendingElements.end())
     {
         throw std::out_of_range("AscendingIterator out of range");
         return *this;
@@ -150,14 +150,14 @@ MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::operat
 
 MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::begin()
 {
-    it = magicalContainer->sortedElements.begin();
+    it = magicalContainer->ascendingElements.begin();
     pos = 0;
     return *this;
 }
 
 MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::end()
 {
-    it = magicalContainer->sortedElements.end(); 
+    it = magicalContainer->ascendingElements.end(); 
     pos = magicalContainer->size();
     return *this;
 }
@@ -166,7 +166,7 @@ MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::end()
 ************* SideCrossIterator ************
 ********************************************/
 
-MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &magicalContainer) : magicalContainer(&magicalContainer), it(magicalContainer.crossElements.begin()), pos(0) {}
+MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &magicalContainer) : magicalContainer(&magicalContainer), it(magicalContainer.sideCrossElements.begin()), pos(0) {}
 
 MagicalContainer::SideCrossIterator::SideCrossIterator(const SideCrossIterator &other) : magicalContainer(other.magicalContainer), it(other.it), pos(other.pos) {}
 
@@ -212,14 +212,14 @@ bool MagicalContainer::SideCrossIterator::operator>(const SideCrossIterator &oth
 
 int MagicalContainer::SideCrossIterator::operator*() const
 {
-    if (it == magicalContainer->crossElements.end())
+    if (it == magicalContainer->sideCrossElements.end())
         throw std::out_of_range("SideCrossIterator out of range");
     return *it;
 }
 
 MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operator++()
 {
-    if (it == magicalContainer->crossElements.end())
+    if (it == magicalContainer->sideCrossElements.end())
     {
         throw std::out_of_range("SideCrossIterator out of range");
         return *this;
@@ -231,14 +231,14 @@ MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operat
 
 MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::begin()
 {
-    it = magicalContainer->crossElements.begin(); 
+    it = magicalContainer->sideCrossElements.begin(); 
     pos = 0;                                      
     return *this;
 }
 
 MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::end()
 {
-    it = magicalContainer->crossElements.end(); 
+    it = magicalContainer->sideCrossElements.end(); 
     pos = magicalContainer->size();
     return *this;
 }

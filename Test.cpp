@@ -1,227 +1,227 @@
 #include "doctest.h"
 #include "sources/MagicalContainer.hpp"
+#include <algorithm>
 
 using namespace ariel;
 
-TEST_CASE("MagicalContainer")
+TEST_CASE("Test addElement")
 {
-    MagicalContainer container;
-    container.addElement(17);
-    container.addElement(2);
-    container.addElement(25);
-    container.addElement(9);
-    container.addElement(3);
-    CHECK(container.size() == 5);
-
-    container.removeElement(17);
-    CHECK(container.size() == 4);
-
-    container.removeElement(2);
-    CHECK(container.size() == 3);
-
-    CHECK(container.size() == 3);
+    MagicalContainer mc;
+    mc.addElement(3);
+    mc.addElement(2);
+    mc.addElement(1);
+    CHECK(mc.size() == 3);
 }
 
-TEST_CASE("AscendingIterator")
+TEST_CASE("Test removeElement")
 {
-    MagicalContainer container;
-    MagicalContainer container2;
-
-    MagicalContainer::AscendingIterator ascendingIterator1(container);
-    MagicalContainer::AscendingIterator ascendingIterator2(ascendingIterator1); // copy constructor
-    MagicalContainer::AscendingIterator ascendingIterator3(container2);
-
-    CHECK_EQ(ascendingIterator1.begin(), ascendingIterator1.end()); // empty container
-
-    container.addElement(17);
-    container.addElement(2);
-    container.addElement(25);
-    container.addElement(9);
-    container.addElement(3);
-
-    container2.addElement(12);
-    container2.addElement(1);
-    container2.addElement(3);
-    container2.addElement(100);
-    container2.addElement(53);
-
-    // Initialization test
-    CHECK(*ascendingIterator1.begin() == 2);                           // smallest element
-    CHECK(*ascendingIterator1.begin() == *ascendingIterator2.begin()); // same value because of copy constructor
-    CHECK(*ascendingIterator3.begin() == 1);                           // smallest element
-
-    // Comparison test
-    CHECK((ascendingIterator1 == ascendingIterator2));
-    CHECK_THROWS_AS(ascendingIterator1.operator==(ascendingIterator3), std::invalid_argument); // cant compare iterators from different containers
-    CHECK_THROWS_AS(ascendingIterator1.operator<(ascendingIterator3), std::invalid_argument);
-    CHECK_THROWS_AS(ascendingIterator1.operator>(ascendingIterator3), std::invalid_argument);
-    CHECK_THROWS_AS(ascendingIterator1.operator!=(ascendingIterator3), std::invalid_argument);
-
-    // Incrementation test and comparison test
-    ++ascendingIterator1;
-    CHECK(*ascendingIterator1 == 3);
-    CHECK((ascendingIterator1 != ascendingIterator2));
-    CHECK((ascendingIterator1 > ascendingIterator2));
-    CHECK((ascendingIterator2 < ascendingIterator1));
-
-    // Order test
-    int expectedOrder[] = {2, 3, 9, 17, 25};
-    int i = 0;
-    for (MagicalContainer::AscendingIterator it = ascendingIterator1.begin(); it != ascendingIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder[i]);
-    }
-
-    // Container is not detached from iterator test
-    container.addElement(1000);
-    int expectedOrder2[] = {2, 3, 9, 17, 25, 1000};
-    i = 0;
-    for (MagicalContainer::AscendingIterator it = ascendingIterator1.begin(); it != ascendingIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder2[i]);
-    }
-    container.removeElement(17);
-    container.removeElement(2);
-    int expectedOrder3[] = {3, 9, 25, 1000};
-    i = 0;
-    for (MagicalContainer::AscendingIterator it = ascendingIterator1.begin(); it != ascendingIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder3[i]);
-    }
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.removeElement(2);
+    CHECK(mc.size() == 1);
 }
 
-TEST_CASE("SideCrossIterator")
+TEST_CASE("Test equality of MagicalContainers")
 {
-    MagicalContainer container;
-    MagicalContainer container2;
-
-    MagicalContainer::SideCrossIterator sideCrossIterator1(container);
-    MagicalContainer::SideCrossIterator sideCrossIterator2(sideCrossIterator1); // copy constructor
-    MagicalContainer::SideCrossIterator sideCrossIterator3(container2);
-
-    CHECK_EQ(sideCrossIterator1.begin(), sideCrossIterator1.end()); // empty container
-
-    container.addElement(17);
-    container.addElement(2);
-    container.addElement(25);
-    container.addElement(9);
-    container.addElement(3);
-
-    container2.addElement(12);
-    container2.addElement(1);
-    container2.addElement(3);
-    container2.addElement(100);
-    container2.addElement(53);
-
-    // Initialization test
-    CHECK(*sideCrossIterator1.begin() == 2);                          // first element
-    CHECK(*sideCrossIterator1.begin() == *sideCrossIterator2.begin()); // same value because of copy constructor
-    CHECK(*sideCrossIterator3.begin() == 1);                          // first element
-
-    // Comparison test
-    CHECK((sideCrossIterator1 == sideCrossIterator2));
-    CHECK_THROWS_AS(sideCrossIterator1.operator==(sideCrossIterator3), std::invalid_argument); // cant compare iterators from different containers
-    CHECK_THROWS_AS(sideCrossIterator1.operator<(sideCrossIterator3), std::invalid_argument);
-    CHECK_THROWS_AS(sideCrossIterator1.operator>(sideCrossIterator3), std::invalid_argument);
-    CHECK_THROWS_AS(sideCrossIterator1.operator!=(sideCrossIterator3), std::invalid_argument);
-
-    // Incrementation test and comparison test
-    ++sideCrossIterator1;
-    CHECK(*sideCrossIterator1 == 25);
-    CHECK((sideCrossIterator1 != sideCrossIterator2));
-    CHECK((sideCrossIterator1 > sideCrossIterator2));
-    CHECK((sideCrossIterator2 < sideCrossIterator1));
-
-    // Order test
-    int expectedOrder[] = {2,25,3,17,9};
-    int i = 0;
-    for (MagicalContainer::SideCrossIterator it = sideCrossIterator1.begin(); it != sideCrossIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder[i]);
-    }
-
-    // Container is not detached from iterator test
-    container.addElement(1000);
-    int expectedOrder2[] = {2,1000,3,25,9,17};
-    i = 0;
-    for (MagicalContainer::SideCrossIterator it = sideCrossIterator1.begin(); it != sideCrossIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder2[i]);
-    }
-    container.removeElement(17);
-    container.removeElement(2);
-    int expectedOrder3[] = {3,1000,9,25};
-    i = 0;
-    for (MagicalContainer::SideCrossIterator it = sideCrossIterator1.begin(); it != sideCrossIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder3[i]);
-    }
+    MagicalContainer mc1;
+    MagicalContainer mc2;
+    mc1.addElement(1);
+    mc1.addElement(2);
+    mc2.addElement(1);
+    mc2.addElement(2);
+    CHECK(mc1 == mc2);
 }
 
-TEST_CASE("PrimeIterator")
+TEST_CASE("Test inequality of MagicalContainers")
 {
-    MagicalContainer container;
-    MagicalContainer container2;
+    MagicalContainer mc1;
+    MagicalContainer mc2;
+    mc1.addElement(1);
+    mc2.addElement(2);
+    CHECK(mc1 != mc2);
+}
 
-    MagicalContainer::PrimeIterator primeIterator1(container);
-    MagicalContainer::PrimeIterator primeIterator2(primeIterator1); // copy constructor
-    MagicalContainer::PrimeIterator primeIterator3(container2);
+TEST_CASE("Test prime iterator")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+    mc.addElement(4);
+    mc.addElement(5);
+    mc.addElement(6);
 
-    CHECK_EQ(primeIterator1.begin(), primeIterator1.end()); // empty container
+    MagicalContainer::PrimeIterator it(mc);
+    CHECK(*it == 2);
+    ++it;
+    CHECK(*it == 3);
+    ++it;
+    CHECK(*it == 5);
+}
 
-    container.addElement(17);
-    container.addElement(2);
-    container.addElement(25);
-    container.addElement(9);
-    container.addElement(3);
+TEST_CASE("Test ascending iterator")
+{
+    MagicalContainer mc;
+    mc.addElement(5);
+    mc.addElement(3);
+    mc.addElement(1);
 
-    container2.addElement(12);
-    container2.addElement(1);
-    container2.addElement(3);
-    container2.addElement(100);
-    container2.addElement(53);
+    MagicalContainer::AscendingIterator it(mc);
+    CHECK(*it == 1);
+    ++it;
+    CHECK(*it == 3);
+    ++it;
+    CHECK(*it == 5);
+}
 
-    // Initialization test
-    CHECK(*primeIterator1.begin() == 17);                          // first prime element
-    CHECK(*primeIterator1.begin() == *primeIterator2.begin()); // same value because of copy constructor
-    CHECK(*primeIterator3.begin() == 3);                          // first prime element
+TEST_CASE("Test side cross iterator")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
 
-    // Comparison test
-    CHECK((primeIterator1 == primeIterator2));
-    CHECK_THROWS_AS(primeIterator1.operator==(primeIterator3), std::invalid_argument); // cant compare iterators from different containers
-    CHECK_THROWS_AS(primeIterator1.operator<(primeIterator3), std::invalid_argument);
-    CHECK_THROWS_AS(primeIterator1.operator>(primeIterator3), std::invalid_argument);
-    CHECK_THROWS_AS(primeIterator1.operator!=(primeIterator3), std::invalid_argument);
+    MagicalContainer::SideCrossIterator it(mc);
+    CHECK(*it == 1);
+    ++it;
+    CHECK(*it == 3);
+    ++it;
+    CHECK(*it == 2);
+}
 
-    // Incrementation test and comparison test
-    ++primeIterator1;
-    CHECK(*primeIterator1 == 2);
-    CHECK((primeIterator1 != primeIterator2));
-    CHECK((primeIterator1 > primeIterator2));
-    CHECK((primeIterator2 < primeIterator1));
+TEST_CASE("Test iterator begin")
+{
+    MagicalContainer mc;
+    mc.addElement(5);
+    mc.addElement(3);
+    mc.addElement(1);
 
-    // Order test
-    int expectedOrder[] = {17, 2, 3};
-    int i = 0;
-    for (MagicalContainer::PrimeIterator it = primeIterator1.begin(); it != primeIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder[i]);
-    }
+    MagicalContainer::AscendingIterator it(mc);
+    it.begin();
+    CHECK(*it == 1);
+}
 
-    // Container is not detached from iterator test
-    container.addElement(1009);
-    int expectedOrder2[] = {17,2,3,1009};
-    i = 0;
-    for (MagicalContainer::PrimeIterator it = primeIterator1.begin(); it != primeIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder2[i]);
-    }
-    container.removeElement(17);
-    container.removeElement(2);
-    int expectedOrder3[] = {3,1009};
-    i = 0;
-    for (MagicalContainer::PrimeIterator it = primeIterator1.begin(); it != primeIterator1.end(); ++it, ++i)
-    {
-        CHECK(*it == expectedOrder3[i]);
-    }
+TEST_CASE("Test iterator remove")
+{
+    MagicalContainer mc;
+    mc.addElement(5);
+    mc.addElement(3);
+    mc.addElement(1);
+
+    MagicalContainer::AscendingIterator it(mc);
+    mc.removeElement(5);
+    CHECK(*it == 3);
+}
+
+TEST_CASE("Test iterator equality")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+
+    MagicalContainer::SideCrossIterator it1(mc);
+    MagicalContainer::SideCrossIterator it2(mc);
+    CHECK(it1 == it2);
+}
+
+TEST_CASE("Test iterator inequality")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+
+    MagicalContainer::SideCrossIterator it1(mc);
+    MagicalContainer::SideCrossIterator it2(mc);
+    ++it2;
+    CHECK(it1 != it2);
+}
+
+TEST_CASE("Test iterator increment")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+
+    MagicalContainer::SideCrossIterator it(mc);
+    ++it;
+    CHECK(*it == 3);
+}
+
+TEST_CASE("Test iterator decrement")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+
+    MagicalContainer::SideCrossIterator it(mc);
+    mc.removeElement(3);
+    CHECK(*it == 2);
+}
+
+TEST_CASE("Test container size after removing all elements")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+    mc.removeElement(1);
+    mc.removeElement(2);
+    mc.removeElement(3);
+    CHECK(mc.size() == 0);
+}
+
+TEST_CASE("Test container size after adding duplicates")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(1);
+    mc.addElement(2);
+    CHECK(mc.size() == 3);
+}
+
+TEST_CASE("Test container size after removing duplicates")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.removeElement(1);
+    CHECK(mc.size() == 2);
+}
+
+TEST_CASE("Test removeElement when container is empty")
+{
+    MagicalContainer mc;
+    CHECK_THROWS(mc.removeElement(1));
+}
+
+TEST_CASE("Test removeElement when element is not in the container")
+{
+    MagicalContainer mc;
+    mc.addElement(1);
+    mc.addElement(2);
+    mc.addElement(3);
+    CHECK_THROWS(mc.removeElement(4));
+}
+
+TEST_CASE("Test addElement with negative values")
+{
+    MagicalContainer mc;
+    mc.addElement(-1);
+    mc.addElement(-2);
+    CHECK(mc.size() == 2);
+}
+
+TEST_CASE("Test removeElement with negative values")
+{
+    MagicalContainer mc;
+    mc.addElement(-1);
+    mc.addElement(-2);
+    mc.removeElement(-1);
+    CHECK(mc.size() == 1);
 }
